@@ -1,2 +1,3 @@
 # bnt162b2
-Reverse Engineering the BioNTech COVID-19 Vaccine
+
+Used [pvieito](https://github.com/pvieito)'s algorithm and tweaked the GC ratio, currently at 91.08% match to the original vaccine sequence.
