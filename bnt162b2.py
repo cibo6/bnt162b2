@@ -2,7 +2,9 @@ from dnachisel import *
 import python_codon_tables
 import mmap
 
-codon_usage_table = python_codon_tables.get_codons_table("h_sapiens_9606")
+codon_usage_table = python_codon_tables.get_codons_table(57486)
+species = 'h_sapiens'
+#TaxIDs: 10090,57486 (mus musculus) 9544 (macaca mulatta) 9606 (homo sapiens)
 
 def mmap_io(filename):
     with open(filename, mode="r", encoding="utf8") as file_obj:
@@ -24,11 +26,11 @@ def optimize_virus():
     problem = DnaOptimizationProblem(
         sequence=virus,
         constraints=[
+            EnforceTranslation(genetic_table='Standard', start_codon='ATG'),
             EnforceGCContent(mini=0.54, maxi=0.93, window=120),
-            EnforceTranslation(),
         ],
         objectives=[
-            CodonOptimize(codon_usage_table=codon_usage_table)
+            CodonOptimize(method = "use_best_codon", codon_usage_table=codon_usage_table),
         ]
     )
     problem.resolve_constraints()
@@ -36,7 +38,7 @@ def optimize_virus():
     return compute_match(vaccine, problem.sequence)
 
 def average_match(num_iterations=20):
-    return sum([optimize_virus() for i in range(num_iterations)])/num_iterations
+    return max([optimize_virus() for i in range(num_iterations)])
 
 score = average_match()
 print(f"{score:.2%}")
